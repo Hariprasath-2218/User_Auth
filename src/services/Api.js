@@ -6,6 +6,7 @@ const API_KEY = 'AIzaSyBAd_2iS5XL4ryiS6Hgut7ErGLQUlnVyOY';
 const REGISTER_URL = `/accounts:signUp?key=${API_KEY}`;
 const LOGIN_URL = `/accounts:signInWithPassword?key=${API_KEY}`;
 const USER_URL = `/accounts:lookup?key=${API_KEY}`;
+const UPDATE_URL = `/accounts:update?key=${API_KEY}`;
 
 export const RegisterApi = (input) => {
     const data = {displayName:input.name,email:input.email,password:input.password};
@@ -20,4 +21,15 @@ export const LoginApi = (input) => {
 export const UserDetailApi = () => {
     let data = {idToken:getUserData()}
     return axios.post(USER_URL,data);
+}
+
+// New API function to update user profile
+export const UpdateUserProfileApi = (input) => {
+    const data = {
+        idToken: getUserData(),
+        displayName: input.displayName,
+        photoUrl: input.photoUrl,
+        returnSecureToken: true
+    };
+    return axios.post(UPDATE_URL, data);
 }

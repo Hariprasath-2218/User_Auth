@@ -7,23 +7,25 @@ import { UserDetailApi } from '../services/Api';
 export default function Navigation({ logoutUser }) {
     const navigate = useNavigate();
     const [scrollY, setScrollY] = useState(0);
-    const [user, setUser] = useState(
-        {
-            name: "",
-            email: "",
-            avatar: ""
-        });
+    const [user, setUser] = useState({
+        name: "",
+        email: "",
+        avatar: ""
+    });
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
-
-    // Mock user data - in real app this would come from context/props
 
     useEffect(() => {
         if (isAuthenticated()) {
             UserDetailApi().then((response) => {
                 console.log("user", response)
-                setUser({ ...user, name: response.data.users[0].displayName, email: response.data.users[0].email, avatar: response.data.users[0].photoUrl })
+                setUser({ 
+                    ...user, 
+                    name: response.data.users[0].displayName, 
+                    email: response.data.users[0].email, 
+                    avatar: response.data.users[0].photoUrl 
+                })
             })
         }
     }, [])
@@ -34,25 +36,27 @@ export default function Navigation({ logoutUser }) {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-
     const handleLogout = () => {
         setIsLoggingOut(true);
-        logoutUser();  // ← ACTUALLY CALL THE FUNCTION HERE
+        logoutUser();
 
-        // Simulate logout process (you can keep this if needed)
         setTimeout(() => {
             setIsLoggingOut(false);
             console.log('User logged out');
         }, 1500);
     };
 
+    // Navigate to profile page
+    const handleProfileClick = () => {
+        setIsUserMenuOpen(false);
+        navigate('/profile');
+    };
 
     const navItems = [
         { name: 'Home', href: '#', icon: Home },
         { name: 'Projects', href: '#' },
         { name: 'Team', href: '#' },
         { name: 'Reports', href: '#' },
-
     ];
 
     return (
@@ -99,9 +103,13 @@ export default function Navigation({ logoutUser }) {
                                 className="flex items-center space-x-3 text-sm rounded-full p-2 hover:bg-white/10 transition-all duration-200"
                             >
                                 <img
-                                    className="w-8 h-8 rounded-full border-2 border-purple-400"
-                                    src={user.avatar}
+                                    className="w-8 h-8 rounded-full border-2 border-purple-400 object-cover cursor-pointer"
+                                    src={user.avatar || '/api/placeholder/32/32'}
                                     alt={user.name}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleProfileClick();
+                                    }}
                                 />
                                 <div className="hidden lg:flex flex-col items-start">
                                     <span className="text-white font-medium">{user.name}</span>
@@ -119,7 +127,12 @@ export default function Navigation({ logoutUser }) {
                                 >
                                     <div className="px-4 py-3 border-b border-white/10">
                                         <div className="flex items-center space-x-3">
-                                            <img className="w-10 h-10 rounded-full" src={user.avatar} alt={user.name} />
+                                            <img 
+                                                className="w-10 h-10 rounded-full object-cover border-2 border-purple-400 cursor-pointer" 
+                                                src={user.avatar || '/api/placeholder/40/40'} 
+                                                alt={user.name}
+                                                onClick={handleProfileClick}
+                                            />
                                             <div>
                                                 <div className="text-white font-medium">{user.name}</div>
                                                 <div className="text-gray-400 text-sm">{user.email}</div>
@@ -128,10 +141,13 @@ export default function Navigation({ logoutUser }) {
                                     </div>
 
                                     <div className="py-2">
-                                        <a href="#" className="flex items-center px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 transition-colors">
+                                        <button 
+                                            onClick={handleProfileClick}
+                                            className="flex items-center w-full px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
+                                        >
                                             <User className="w-4 h-4 mr-3" />
                                             Profile Settings
-                                        </a>
+                                        </button>
                                         <a href="#" className="flex items-center px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 transition-colors">
                                             <Settings className="w-4 h-4 mr-3" />
                                             Account Settings
@@ -177,8 +193,15 @@ export default function Navigation({ logoutUser }) {
                 {isMobileMenuOpen && (
                     <div className="md:hidden border-t border-white/10 bg-slate-900/95 backdrop-blur-md">
                         <div className="px-2 pt-2 pb-3 space-y-1">
-                            <div className="flex items-center space-x-3 px-3 py-3 bg-white/5 rounded-lg mb-3">
-                                <img className="w-10 h-10 rounded-full border-2 border-purple-400" src={user.avatar} alt={user.name} />
+                            <div 
+                                className="flex items-center space-x-3 px-3 py-3 bg-white/5 rounded-lg mb-3 cursor-pointer hover:bg-white/10 transition-colors"
+                                onClick={handleProfileClick}
+                            >
+                                <img 
+                                    className="w-10 h-10 rounded-full border-2 border-purple-400 object-cover" 
+                                    src={user.avatar || '/api/placeholder/40/40'} 
+                                    alt={user.name} 
+                                />
                                 <div>
                                     <div className="text-white font-medium">{user.name}</div>
                                     <div className="text-gray-400 text-sm">{user.email}</div>
@@ -198,10 +221,13 @@ export default function Navigation({ logoutUser }) {
 
                             <div className="border-t border-white/10 my-3"></div>
 
-                            <a href="#" className="flex items-center px-3 py-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+                            <button 
+                                onClick={handleProfileClick}
+                                className="flex items-center w-full px-3 py-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                            >
                                 <User className="w-5 h-5 mr-3" />
                                 Profile Settings
-                            </a>
+                            </button>
                             <a href="#" className="flex items-center px-3 py-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
                                 <Settings className="w-5 h-5 mr-3" />
                                 Account Settings

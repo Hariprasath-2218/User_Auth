@@ -7,6 +7,7 @@ import WelcomePage from './components/WelcomePage'
 import Homepage from './components/HomePage'
 import LoginPage from './components/LoginPage'
 import Navigation from './components/Nav'
+import ProfilePage from './components/ProfilePage'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -19,6 +20,7 @@ function App() {
           <Route path='/register' element={<RegisterPage/>}/>
           <Route path='/login' element={<LoginPage/>}/>
           <Route path='/welcome' element={<WelcomePage/>}/>
+          <Route path='/profile' element={<ProfilePage/>}/>
         </Routes>
       </BrowserRouter>
     </>
